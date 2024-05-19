@@ -10,14 +10,14 @@ Documentation for the Moneybots API
 
 ### User API - CRUD
 
-| Method  | Route           | Description             | Request [application/x-www-form-urlencoded] | Response [application/json]         |
-| ------- | --------------- | ----------------------- | ------------------------------------------- | ----------------------------------- |
-| `POST`  | `/user/create`  | Create a new user       | `user_id`, `password`                       | `user_id`, `created_at`             |
-| `PATCH` | `/user/update`  | Update password of user | `user_id`, `password`, `new_password`       | `user_id`, `updated_at`             |
-| `POST`  | `/user/delete`  | Delete a user           | `user_id`, `password`                       | `user_id`, `deleted_at`             |
-| `POST`  | `/user/login`   | Login a user            | `user_id`, `password`, `totp_secret`        | `user_id`, `enctoken`, `login_time` |
-| `POST`  | `/user/logout`  | Logout a user           | `user_id`, `password`                       | `user_id`, `logout_time`            |
-| `POST`  | `/user/profile` | Profile of a user       | `user_id`, `password`                       | `user_id`, `username`, ...          |
+| Method  | Route           | Description             | Request                               | Response                            |
+| ------- | --------------- | ----------------------- | ------------------------------------- | ----------------------------------- |
+| `POST`  | `/user/create`  | Create a new user       | `user_id`, `password`                 | `user_id`, `created_at`             |
+| `PATCH` | `/user/update`  | Update password of user | `user_id`, `password`, `new_password` | `user_id`, `updated_at`             |
+| `POST`  | `/user/delete`  | Delete a user           | `user_id`, `password`                 | `user_id`, `deleted_at`             |
+| `POST`  | `/user/login`   | Login a user            | `user_id`, `password`, `totp_secret`  | `user_id`, `enctoken`, `login_time` |
+| `POST`  | `/user/logout`  | Logout a user           | `user_id`, `password`                 | `user_id`, `logout_time`            |
+| `POST`  | `/user/profile` | Profile of a user       | `user_id`, `password`                 | `user_id`, `username`, ...          |
 
 ---
 
