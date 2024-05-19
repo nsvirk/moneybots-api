@@ -25,4 +25,3 @@ go.work
 *.http
 .env
 HELP.md
-Makefile
