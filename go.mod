@@ -4,8 +4,10 @@ module github.com/nsvirk/moneybotsapi
 go 1.22.2
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/labstack/gommon v0.4.2
+	github.com/nsvirk/gokiteauth v1.0.2
 	github.com/nsvirk/gokiteconnect/v4 v4.3.4
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlite v1.5.5

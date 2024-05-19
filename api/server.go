@@ -3,12 +3,19 @@ package api
 import (
 	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
 
 // StartServer starts the server
 func StartServer() {
+
+	// load the .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	// Migrate the schema
 	MigrateDBSchema()

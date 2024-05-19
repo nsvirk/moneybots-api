@@ -11,15 +11,17 @@ import (
 // UserProfileHandler gets the user profile
 func UserProfileHandler(c echo.Context) error {
 
-	// get the form inputs
-	userId := c.FormValue("user_id")
-	if userId == "" {
-		return SendError(c, http.StatusBadRequest, "`user_id` is required")
+	// get form inputs
+	var userId, password string
+
+	err := GetUserFormUserId(c, &userId)
+	if err != nil {
+		return SendError(c, http.StatusBadRequest, err.Error())
 	}
 
-	password := c.FormValue("password")
-	if password == "" {
-		return SendError(c, http.StatusBadRequest, "`password` is required")
+	err = GetUserFormPassword(c, &password)
+	if err != nil {
+		return SendError(c, http.StatusBadRequest, err.Error())
 	}
 
 	// initialize the database connection
@@ -28,7 +30,7 @@ func UserProfileHandler(c echo.Context) error {
 	// check if the user exists or not
 	var user = UserModel{}
 	var passwordHash = generateMD5Hash(password)
-	err := db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
+	err = db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
 
 	if err != nil {
 		// send error, if record not found

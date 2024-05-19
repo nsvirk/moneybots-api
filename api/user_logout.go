@@ -16,15 +16,17 @@ type userLogoutResponse struct {
 // UserLogutHandler logs out a user
 func UserLogutHandler(c echo.Context) error {
 
-	// get the form inputs
-	userId := c.FormValue("user_id")
-	if userId == "" {
-		return SendError(c, http.StatusBadRequest, "`user_id` is required")
+	// get form inputs
+	var userId, password string
+
+	err := GetUserFormUserId(c, &userId)
+	if err != nil {
+		return SendError(c, http.StatusBadRequest, err.Error())
 	}
 
-	password := c.FormValue("password")
-	if password == "" {
-		return SendError(c, http.StatusBadRequest, "`password` is required")
+	err = GetUserFormPassword(c, &password)
+	if err != nil {
+		return SendError(c, http.StatusBadRequest, err.Error())
 	}
 
 	// initialize the database connection
@@ -33,7 +35,7 @@ func UserLogutHandler(c echo.Context) error {
 	// check if the user exists or not
 	var user = UserModel{}
 	var passwordHash = generateMD5Hash(password)
-	err := db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
+	err = db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
 
 	if err != nil {
 		// send error, if record not found
@@ -62,7 +64,7 @@ func UserLogutHandler(c echo.Context) error {
 	// send the response
 	data := userLogoutResponse{
 		UserId:     user.UserId,
-		LogoutTime: user.UpdatedAt.String(),
+		LogoutTime: user.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 
 	return SendResponse(c, http.StatusOK, data)
