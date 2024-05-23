@@ -14,7 +14,7 @@ func StartServer() {
 	// load the .env file
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		fmt.Println("Error loading .env file, trying processEnv's")
 	}
 
 	// Migrate the schema

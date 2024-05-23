@@ -23,7 +23,8 @@ func ConnectToDB() *gorm.DB {
 
 	// logLevel
 	// -----------------
-	var logLevel logger.LogLevel = logger.Info
+	// var logLevel logger.LogLevel = logger.Info
+	var logLevel logger.LogLevel = logger.Silent
 	// ---------------------------------------------------------
 
 	// connect to the database
@@ -104,7 +105,8 @@ func MigrateDBSchema() {
 	db := ConnectToDB()
 
 	// Migrate the schema
-	db.AutoMigrate(&UserModel{}) // UserModel is defined in user_model.go
+	db.AutoMigrate(&UserModel{})        // UserModel is defined in user_model.go
+	db.AutoMigrate(&InstrumentsModel{}) // InstrumentsModel is defined in instruments_model.go
 
 	// Close the database connection
 

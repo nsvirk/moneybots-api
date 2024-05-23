@@ -42,9 +42,8 @@ func UserLoginHandler(c echo.Context) error {
 	// check if the user exists or not
 	var user = UserModel{}
 	var passwordHash = generateMD5Hash(password)
-	err = db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
-
-	if err != nil {
+	tx := db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user)
+	if tx.Error != nil {
 		// send error, if record not found
 		if err.Error() == "record not found" {
 			err = fmt.Errorf("user `%s` not found", userId)
@@ -56,46 +55,47 @@ func UserLoginHandler(c echo.Context) error {
 	ka := kiteauth.New(userId)
 	// kc.SetDebug(true)
 
-	// if user exists then check if db session is valid
-	tokenValid := false
-	if user.Enctoken != "" {
-		ka.SetBaseURI("https://kite.zerodha.com/oms")
-		tokenValid, err = ka.CheckEnctokenValid(user.Enctoken)
-		if err != nil {
-			return SendError(c, http.StatusInternalServerError, err.Error())
-		}
+	// Check if the enctoken is valid
+	ka.SetBaseURI("https://kite.zerodha.com/oms")
+	tokenValid, err := ka.CheckEnctokenValid(user.Enctoken)
+	if err != nil {
+		return SendError(c, http.StatusInternalServerError, err.Error())
 	}
-	fmt.Println("tokenValid", tokenValid)
 
-	// enctoken not valid, get a new one
-	if !tokenValid {
+	if tokenValid {
+		// enctoken is valid send response
+		data := userLoginResponse{
+			UserId:    user.UserId,
+			Enctoken:  user.Enctoken,
+			LoginTime: user.LoginTime,
+		}
+		return SendResponse(c, http.StatusOK, data)
+
+		// enctoken is not valid sget a new session
+	} else {
 		// generate a new kite session
+		ka.SetBaseURI("https://kite.zerodha.com")
 		session, err := ka.GenerateSession(password, totpSecret)
 		if err != nil {
 			return SendError(c, http.StatusUnauthorized, err.Error())
 		}
-		fmt.Println("session", session)
 
 		// update the user enctoken and login_time
 		user.Enctoken = session.Enctoken
 		user.LoginTime = session.LoginTime
 		err = db.Save(&user).Error
 		// close the database connection
-		// defer CloseDB(db)
+		defer CloseDB(db)
 		if err != nil {
 			return SendError(c, http.StatusInternalServerError, err.Error())
 		}
+		// send the response
+		data := userLoginResponse{
+			UserId:    user.UserId,
+			Enctoken:  user.Enctoken,
+			LoginTime: user.LoginTime,
+		}
+		return SendResponse(c, http.StatusOK, data)
 	}
 
-	// // close the database connection
-	// defer CloseDB(db)
-
-	// send the response
-	data := userLoginResponse{
-		UserId:    user.UserId,
-		Enctoken:  user.Enctoken,
-		LoginTime: user.LoginTime,
-	}
-
-	return SendResponse(c, http.StatusOK, data)
 }

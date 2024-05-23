@@ -18,4 +18,8 @@ func SetupRoutes(e *echo.Echo) {
 	e.POST("/user/logout", UserLogutHandler)
 	e.POST("/user/profile", UserProfileHandler)
 
+	// instrument routes
+	e.GET("/instruments/update", InstrumentsUpdateHandler)
+	e.GET("/instruments/details", InstrumentsDetailsHandler)
+
 }

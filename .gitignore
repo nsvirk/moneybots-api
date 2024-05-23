@@ -24,4 +24,4 @@ go.work
 /bin
 *.http
 .env
-HELP.md
+SERVER.md
