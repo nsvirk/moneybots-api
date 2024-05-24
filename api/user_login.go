@@ -42,8 +42,8 @@ func UserLoginHandler(c echo.Context) error {
 	// check if the user exists or not
 	var user = UserModel{}
 	var passwordHash = generateMD5Hash(password)
-	tx := db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user)
-	if tx.Error != nil {
+	err = db.Where("user_id = ? and password_hash = ? ", userId, passwordHash).First(&user).Error
+	if err != nil {
 		// send error, if record not found
 		if err.Error() == "record not found" {
 			err = fmt.Errorf("user `%s` not found", userId)
