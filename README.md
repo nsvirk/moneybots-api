@@ -4,13 +4,15 @@ Documentation for the Moneybots API
 
 ## API's
 
-| API         | Route Prefix   | Description                       | Authentication                           |
-| ----------- | -------------- | --------------------------------- | ---------------------------------------- |
-| User        | `/user`        | For managing Kite API users       | Request Form Body: `user_id`, `password` |
-| Instruments | `/instruments` | For managing Kite API instruments | Authorization Header: `Bearer token`     |
-| Ticker      | `/ticker`      | For managing Kite Ticker API data | Authorization Header: `Bearer token`     |
+| Sr  | API         | Route Prefix   | Description                       | Authentication                           | Status      |
+| --- | ----------- | -------------- | --------------------------------- | ---------------------------------------- | ----------- |
+| 1.  | User        | `/user`        | For managing Kite API users       | Request Form Body: `user_id`, `password` | Implemented |
+| 2.  | Instruments | `/instruments` | For managing Kite API instruments | Authorization Header: `Bearer token`     | Implemented |
+| 3.  | Ticker      | `/ticker`      | For managing Kite Ticker API data | Authorization Header: `Bearer token`     | Implemented |
+| 4.  | Orders      | `/orders`      | For managing Kite Orders          | Authorization Header: `Bearer token`     | ToDo        |
+| 5.  | Positions   | `/positions`   | For managing Kite Positions       | Authorization Header: `Bearer token`     | ToDo        |
 
-### User API
+### 1. User API
 
 | Method  | Route           | Description             | Request Form Payload                  | Response Data                                        |
 | ------- | --------------- | ----------------------- | ------------------------------------- | ---------------------------------------------------- |
@@ -21,27 +23,30 @@ Documentation for the Moneybots API
 | `POST`  | `/user/logout`  | Logout a user           | `user_id`, `password`                 | `user_id`, `logout_time`                             |
 | `POST`  | `/user/profile` | Profile of a user       | `user_id`, `password`                 | `user_id`, `username`, `user_shortname`, `email` ... |
 
-### Instruments API
+### 2. Instruments API
 
-| Method | Route                                       | Description                                       | Response Data                                       |
-| ------ | ------------------------------------------- | ------------------------------------------------- | --------------------------------------------------- |
-| `GET`  | `/instruments/update`                       | Update instruments in database from Kite API      | `exchanges`, `instruments`, `updated_at`            |
-| `GET`  | `/instruments/details?i=NSE:INFY&i=NSE:IOC` | Get instrument detail from exchange:tradingsymbol | `exchange`, `trading_symbol`, `expiry`, `strike`... |
-| `GET`  | `/instruments/details?t=26565&t=264969`     | Get instrument detail from instrument_token       | `exchange`, `trading_symbol`, `expiry`, `strike`... |
+| Method | Route                  | Request Querystring     | Description                                       | Response Data                            |
+| ------ | ---------------------- | ----------------------- | ------------------------------------------------- | ---------------------------------------- |
+| `GET`  | `/instruments/update`  |                         | Update instruments in database from Kite API      | `exchanges`, `instruments`, `updated_at` |
+| `GET`  | `/instruments/details` | `?i=NSE:INFY&i=NSE:IOC` | Get instrument detail from exchange:tradingsymbol | `instrument_map`                         |
+| `GET`  | `/instruments/details` | `?t=26565&t=264969`     | Get instrument detail from instrument_token       | `instrument_token_map`                   |
 
-### Ticks API
+### 3. Ticks API
 
-| Method | Route          | Description     | Request Body  | Response Data                                    |
-| ------ | -------------- | --------------- | ------------- | ------------------------------------------------ |
-| `GET`  | `/ticks/start` | Start the ticks | `instruments` | `user_id`, `instruments`,`channel`, `started_at` |
+| Method | Route          | Description     | Request Body  | Response Data                                       |
+| ------ | -------------- | --------------- | ------------- | --------------------------------------------------- |
+| `POST` | `/ticks/start` | Start the ticks | `instruments` | `user_id`, `channel`, `instruments_ct`,`started_at` |
+| `GET`  | `/ticks/stop`  | Stop the ticks  |               | `user_id`, `channel`, `published_ct`, `stopped_at`  |
 
 ---
 
 ## Authentication
 
+### Uses token returned on login
+
 ```curl
-curl https://api.moneybots.app/instruments/update \
-    -H "Authorization: Bearer jwt" \
+curl https://www.moneybots.app/instruments/update \
+    -H "Authorization: Bearer token" \
 ```
 
 ## Responses

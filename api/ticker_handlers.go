@@ -57,9 +57,10 @@ func TickerStopHandler(c echo.Context) error {
 
 	// Send response
 	respDate := map[string]interface{}{
-		"user_id":         tickerUserid,
-		"published_ticks": tickerPublishedTicks,
-		"stopped_at":      time.Now().Format("2006-01-02 15:04:05"),
+		"user_id":      tickerUserid,
+		"channel":      tickerChannel,
+		"published_ct": tickerPublishedTicks,
+		"stopped_at":   time.Now().Format("2006-01-02 15:04:05"),
 	}
 	return SendResponse(c, http.StatusOK, respDate)
 }
@@ -119,10 +120,10 @@ func TickerStartHandler(c echo.Context) error {
 
 	// Send response
 	respDate := map[string]interface{}{
-		"user_id":         userId,
-		"instruments_ct":  len(tickerInstruments),
-		"instruments_map": tickerInstrumentsMap,
-		"started_at":      time.Now().Format("2006-01-02 15:04:05"),
+		"user_id":        userId,
+		"channel":        tickerChannel,
+		"instruments_ct": len(tickerInstruments),
+		"started_at":     time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	return SendResponse(c, http.StatusOK, respDate)
