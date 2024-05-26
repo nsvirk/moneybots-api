@@ -9,5 +9,5 @@ import (
 
 // IndexHandler is the handler for the index route
 func IndexHandler(c echo.Context) error {
-	return SendResponse(c, http.StatusOK, fmt.Sprintf("%s %s", API_NAME, API_VERSION))
+	return SendResponse(c, http.StatusOK, fmt.Sprintf("%s %s", cfg.APIName, cfg.APIVersion))
 }

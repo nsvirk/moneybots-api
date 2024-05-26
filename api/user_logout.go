@@ -51,6 +51,7 @@ func UserLogutHandler(c echo.Context) error {
 		return SendError(c, http.StatusBadRequest, err.Error())
 	} else {
 		user.Enctoken = ""
+		user.LoginTime = ""
 		err = db.Save(&user).Error
 		// send error if any
 		if err != nil {

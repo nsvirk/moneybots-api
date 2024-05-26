@@ -83,7 +83,7 @@ func InstrumentsUpdateHandler(c echo.Context) error {
 				Instrument:      exTs,
 				InstrumentToken: instrumentToken,
 				Exchange:        exchange,
-				TradingSymbol:   tradingsymbol,
+				Tradingsymbol:   tradingsymbol,
 				Expiry:          expiry,
 				Strike:          strikeValue,
 				LotSize:         lotSize,

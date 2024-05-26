@@ -3,19 +3,12 @@ package api
 import (
 	"fmt"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
 
 // StartServer starts the server
 func StartServer() {
-
-	// load the .env file
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file, trying processEnv's")
-	}
 
 	// Migrate the schema
 	MigrateDBSchema()
@@ -31,14 +24,24 @@ func StartServer() {
 
 	// set echo configurations
 	e.HideBanner = true
-	e.Logger.SetLevel(log.DEBUG)
 
-	// get the server port
-	serverPort := GetServerPort()
+	// Loglevel
+	switch cfg.EchoLogLevel {
+	case "DEBUG":
+		e.Logger.SetLevel(log.DEBUG)
+	case "INFO":
+		e.Logger.SetLevel(log.INFO)
+	case "WARN":
+		e.Logger.SetLevel(log.WARN)
+	case "ERROR":
+		e.Logger.SetLevel(log.ERROR)
+	case "OFF":
+		e.Logger.SetLevel(log.OFF)
+	}
 
 	// print the server info
-	fmt.Println(fmt.Sprintf("%s %s", API_NAME, API_VERSION), "server listening on port", serverPort)
+	fmt.Println(fmt.Sprintf("%s %s", cfg.APIName, cfg.APIVersion), "server listening on port", cfg.ServerPort)
 
 	// start the server
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", serverPort)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", cfg.ServerPort)))
 }

@@ -11,15 +11,22 @@ func SetupRoutes(e *echo.Echo) {
 	e.GET("/", IndexHandler)
 
 	// user routes
-	e.POST("/user/create", UserCreateHandler)
-	e.PATCH("/user/update", UserUpdateHandler)
-	e.POST("/user/delete", UserDeleteHandler)
-	e.POST("/user/login", UserLoginHandler)
-	e.POST("/user/logout", UserLogutHandler)
-	e.POST("/user/profile", UserProfileHandler)
+	userRoutes := e.Group("/user")
+	userRoutes.POST("/create", UserCreateHandler)
+	userRoutes.PATCH("/update", UserUpdateHandler)
+	userRoutes.POST("/delete", UserDeleteHandler)
+	userRoutes.POST("/login", UserLoginHandler)
+	userRoutes.POST("/logout", UserLogutHandler)
+	userRoutes.POST("/profile", UserProfileHandler)
 
 	// instrument routes
-	e.GET("/instruments/update", InstrumentsUpdateHandler)
-	e.GET("/instruments/details", InstrumentsDetailsHandler)
+	instrumentsRoutes := e.Group("/instruments", MWJwtAuthentication())
+	instrumentsRoutes.GET("/update", InstrumentsUpdateHandler)
+	instrumentsRoutes.GET("/details", InstrumentsDetailsHandler)
+
+	// ticker routes
+	tickerRoutes := e.Group("/ticker", MWJwtAuthentication())
+	tickerRoutes.POST("/start", TickerStartHandler)
+	tickerRoutes.GET("/stop", TickerStopHandler)
 
 }

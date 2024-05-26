@@ -5,13 +5,15 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	kiteauth "github.com/nsvirk/gokiteauth"
+	kitesession "github.com/nsvirk/gokitesession"
 )
 
 // userLoginResponse is the response for the user login handler
 type userLoginResponse struct {
+	// Enctoken  string `json:"enctoken"`
 	UserId    string `json:"user_id"`
 	Enctoken  string `json:"enctoken"`
+	Token     string `json:"token"`
 	LoginTime string `json:"login_time"`
 }
 
@@ -51,51 +53,61 @@ func UserLoginHandler(c echo.Context) error {
 		return SendError(c, http.StatusUnauthorized, err.Error())
 	}
 
-	// Create a new Kite connect instance
-	ka := kiteauth.New(userId)
-	// kc.SetDebug(true)
+	// Create a new Kite session instance
+	ks := kitesession.New(userId)
+	ks.SetDebug(true)
 
 	// Check if the enctoken is valid
-	ka.SetBaseURI("https://kite.zerodha.com/oms")
-	tokenValid, err := ka.CheckEnctokenValid(user.Enctoken)
+	tokenValid, err := ks.CheckEnctokenValid(user.Enctoken)
 	if err != nil {
-		return SendError(c, http.StatusInternalServerError, err.Error())
+		return SendError(c, http.StatusUnauthorized, err.Error())
 	}
 
-	if tokenValid {
-		// enctoken is valid send response
-		data := userLoginResponse{
-			UserId:    user.UserId,
-			Enctoken:  user.Enctoken,
-			LoginTime: user.LoginTime,
-		}
-		return SendResponse(c, http.StatusOK, data)
-
-		// enctoken is not valid sget a new session
-	} else {
-		// generate a new kite session
-		ka.SetBaseURI("https://kite.zerodha.com")
-		session, err := ka.GenerateSession(password, totpSecret)
+	// if enctoken is not valid get a new session
+	var session *kitesession.Session
+	if !tokenValid {
+		// generate totp value
+		totpValue, err := ks.GenerateTotpValue(totpSecret)
 		if err != nil {
 			return SendError(c, http.StatusUnauthorized, err.Error())
+		}
+		// generate a new kite session
+		session, err = ks.GenerateSession(password, totpValue)
+		if err != nil {
+			return SendError(c, http.StatusUnauthorized, err.Error())
+		}
+
+		//check if session is created
+		if session.UserId == "" || session.Enctoken == "" {
+			return SendError(c, http.StatusInternalServerError, "session not created")
 		}
 
 		// update the user enctoken and login_time
 		user.Enctoken = session.Enctoken
 		user.LoginTime = session.LoginTime
 		err = db.Save(&user).Error
-		// close the database connection
-		defer CloseDB(db)
 		if err != nil {
 			return SendError(c, http.StatusInternalServerError, err.Error())
 		}
-		// send the response
-		data := userLoginResponse{
-			UserId:    user.UserId,
-			Enctoken:  user.Enctoken,
-			LoginTime: user.LoginTime,
-		}
-		return SendResponse(c, http.StatusOK, data)
 	}
+
+	// close the database connection
+	CloseDB(db)
+
+	// create jwt
+	jwtToken, err := GenerateJWT(user.UserId, user.Enctoken)
+	if err != nil {
+		return SendError(c, http.StatusInternalServerError, err.Error())
+	}
+
+	// send the response
+	data := userLoginResponse{
+		UserId:    user.UserId,
+		Enctoken:  user.Enctoken,
+		Token:     jwtToken,
+		LoginTime: user.LoginTime,
+	}
+
+	return SendResponse(c, http.StatusOK, data)
 
 }

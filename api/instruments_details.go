@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -14,7 +13,7 @@ type Instrument struct {
 	// LastPrice       string `json:"last_price"`
 	// TickSize        string `json:"tick_size"`
 	InstrumentToken int     `json:"instrument_token"`
-	TradingSymbol   string  `json:"tradingsymbol"`
+	Tradingsymbol   string  `json:"tradingsymbol"`
 	Expiry          string  `json:"expiry"`
 	Strike          float64 `json:"strike"`
 	LotSize         int     `json:"lot_size"`
@@ -41,9 +40,6 @@ func InstrumentsDetailsHandler(c echo.Context) error {
 		return SendError(c, http.StatusBadRequest, err.Error())
 	}
 
-	fmt.Println(query.Instruments)
-	fmt.Println(query.Tokens)
-
 	// process the query params
 	queryInstruments := query.Instruments
 	queryTokens := query.Tokens
@@ -51,7 +47,7 @@ func InstrumentsDetailsHandler(c echo.Context) error {
 	// initialize the database connection
 	db := ConnectToDB()
 
-	// create a slice of InstrumentsModel
+	// tx is a database transaction
 	var tx *gorm.DB
 
 	// Query instruments by instrument names
@@ -88,5 +84,4 @@ func InstrumentsDetailsHandler(c echo.Context) error {
 	} else {
 		return SendError(c, http.StatusBadRequest, "instruments or tokens query param is required")
 	}
-
 }

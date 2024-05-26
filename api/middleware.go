@@ -28,8 +28,8 @@ func MWRecover() echo.MiddlewareFunc {
 	return middleware.Recover()
 }
 
-// MWAuthentication middleware authenticates the user
-func MWAuthentication() echo.MiddlewareFunc {
+// MWKeyAuthentication middleware authenticates the user
+func MWKeyAuthentication() echo.MiddlewareFunc {
 	return middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup:  "header:" + echo.HeaderAuthorization,
 		AuthScheme: "Bearer",
@@ -59,23 +59,13 @@ func isUserAuthorized(userId, enctoken string) (bool, error) {
 	db := ConnectToDB()
 
 	// check if user exists
-	// ToDo: check code
 	var dbUser = UserModel{}
 	result := db.First(&dbUser, &UserModel{
 		UserId:   userId,
 		Enctoken: enctoken,
 	})
 
-	// user with matching userId and enctoken exists
-	if result.RowsAffected == 1 {
-		return true, nil
-	}
+	userAuthorized := result.RowsAffected == 1
 
-	// user with matching userId and enctoken does not exist
-	if result.RowsAffected == 0 {
-		return false, nil
-	}
-
-	// default return
-	return false, nil
+	return userAuthorized, nil
 }

@@ -14,7 +14,7 @@ type InstrumentsModel struct {
 	Instrument      string    `gorm:"type:varchar(120);index;unique" json:"instrument"`
 	InstrumentToken int       `gorm:"type:integer;index;unique;not null" json:"instrument_token"`
 	Exchange        string    `gorm:"type:varchar(20)" json:"exchange"`
-	TradingSymbol   string    `gorm:"type:varchar(100)" json:"tradingsymbol"`
+	Tradingsymbol   string    `gorm:"type:varchar(100)" json:"tradingsymbol"`
 	Expiry          string    `gorm:"type:varchar(10)" json:"expiry"`
 	Strike          float64   `gorm:"type:real" json:"strike"`
 	LotSize         int       `gorm:"type:integer" json:"lot_size"`

@@ -8,6 +8,9 @@ import (
 // main is the entry point for the application
 func main() {
 
+	// Load the environment configuration
+	api.LoadEnvConfig()
+
 	// start the server
 	api.StartServer()
 
