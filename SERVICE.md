@@ -60,11 +60,11 @@ sudo journalctl -u moneybotsapi -f
 
 # clone the repo for the first time
 cd ~/apps
-git clone https://github.com/nsvirk/gomoneybotsapi.git
-cd gomoneybotsapi
+git clone https://github.com/nsvirk/moneybotsapi.git
+cd moneybotsapi
 
 # update the repo every next time
-cd ~/apps/gomoneybotsapi && git pull
+cd ~/apps/moneybotsapi && git pull
 
 # build the app
 go build -o moneybotsapi .
