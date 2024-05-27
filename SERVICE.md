@@ -1,5 +1,17 @@
 # Setup moneybotsapi Go binary as service
 
+## Pre-requisites
+
+### Make folder for logs
+
+```sh
+cd ~
+mkdir -p logs/moneybotsapi
+cd logs/moneybotsapi
+pwd
+# /home/ec2-user/logs/moneybotsapi
+```
+
 ## Create a service
 
 ```bash
@@ -52,6 +64,15 @@ sudo journalctl -u moneybotsapi -r
 
 # check logs -f for follow means live logs
 sudo journalctl -u moneybotsapi -f
+
+# find running processes
+ps aux | grep -i moneybotsapi
+
+# kill running processes
+pkill -f moneybotsapi
+
+# check environment variables
+sudo nano /etc/environment
 ```
 
 ## Build the app
